@@ -18,6 +18,7 @@
     "func-names": "off",
     "import/prefer-default-export": "off",
     "operator-linebreak": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "implicit-arrow-linebreak": "off"
   }
 }

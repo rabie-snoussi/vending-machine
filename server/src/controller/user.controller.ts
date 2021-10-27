@@ -5,10 +5,11 @@ import {
   getUsers,
   findUser,
   findAndUpdate,
+  deleteUser,
 } from '../service/user.service';
 import log from '../logger';
 
-export async function createUserHandler(req: Request, res: Response) {
+export const createUserHandler = async (req: Request, res: Response) => {
   try {
     const user = await createUser(req.body);
     return res.send(omit(user.toJSON(), 'password'));
@@ -16,9 +17,9 @@ export async function createUserHandler(req: Request, res: Response) {
     log.error(e);
     return res.status(409).send(e.message);
   }
-}
+};
 
-export async function getUsersHandler(req: Request, res: Response) {
+export const getUsersHandler = async (req: Request, res: Response) => {
   try {
     const users = await getUsers();
 
@@ -27,9 +28,9 @@ export async function getUsersHandler(req: Request, res: Response) {
     log.error(e);
     return res.status(409).send(e.message);
   }
-}
+};
 
-export async function updateDepositHandler(req: Request, res: Response) {
+export const updateDepositHandler = async (req: Request, res: Response) => {
   try {
     const userId = get(req, 'user._id');
     const amount = get(req, 'body.amount');
@@ -52,4 +53,51 @@ export async function updateDepositHandler(req: Request, res: Response) {
     log.error(e);
     return res.status(409).send(e.message);
   }
-}
+};
+
+export const getUserHandler = async (req: Request, res: Response) => {
+  try {
+    const userId = get(req, 'params.userId');
+    const user = await findUser({ _id: userId });
+
+    return res.send(omit(user, 'password'));
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+};
+
+export const updateUserHandler = async (req: Request, res: Response) => {
+  try {
+    const loggedUserId = get(req, 'user._id');
+    const userId = get(req, 'params.userId');
+    const update = req.body;
+
+    if (loggedUserId !== userId) return res.sendStatus(403);
+
+    const updatedUser = await findAndUpdate({ _id: userId }, update, {
+      new: true,
+    });
+
+    return res.send(omit(updatedUser, 'password'));
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+};
+
+export const deleteUserHandler = async (req: Request, res: Response) => {
+  try {
+    const loggedUserId = get(req, 'user._id');
+    const userId = get(req, 'params.userId');
+
+    if (loggedUserId !== userId) return res.sendStatus(403);
+
+    await deleteUser({ _id: userId });
+
+    return res.sendStatus(200);
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+};

@@ -9,14 +9,14 @@ import {
 } from '../service/session.service';
 import { sign } from '../utils/jwt.utils';
 
-export async function createSessionHandler(req: Request, res: Response) {
+export const createSessionHandler = async (req: Request, res: Response) => {
   const user = await validatePassword(req.body);
 
   if (!user) return res.status(401).send('Invalid username or password');
 
   const session = await createSession(user._id, req.get('user-agent') || '');
 
-  const accessToken = createAccessToken({
+  const accessToken = await createAccessToken({
     user,
     session,
   });
@@ -26,11 +26,11 @@ export async function createSessionHandler(req: Request, res: Response) {
   });
 
   return res.send({ accessToken, refreshToken });
-}
+};
 
-export async function deleteSessionHandler(req: Request, res: Response) {
+export const deleteSessionHandler = async (req: Request, res: Response) => {
   const sessionId = get(req, 'user.session');
   await deleteSession({ _id: sessionId });
 
   return res.sendStatus(200);
-}
+};

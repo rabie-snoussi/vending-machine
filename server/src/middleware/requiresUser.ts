@@ -8,9 +8,7 @@ const requiresUser = async (
 ) => {
   const user = get(req, 'user');
 
-  if (!user) {
-    return res.sendStatus(403);
-  }
+  if (!user) return res.sendStatus(403);
 
   return next();
 };

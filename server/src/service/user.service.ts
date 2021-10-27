@@ -10,7 +10,7 @@ import bcrypt from 'bcrypt';
 import config from 'config';
 import User, { UserDocument } from '../model/user.model';
 
-export async function createUser(input: DocumentDefinition<UserDocument>) {
+export const createUser = async (input: DocumentDefinition<UserDocument>) => {
   try {
     const salt = await bcrypt.genSalt(config.get('saltWorkFactor'));
     const hash = await bcrypt.hashSync(input.password, salt);
@@ -19,19 +19,18 @@ export async function createUser(input: DocumentDefinition<UserDocument>) {
   } catch (e: any) {
     throw new Error(e);
   }
-}
+};
 
-export async function findUser(query: FilterQuery<UserDocument>) {
-  return User.findOne(query).lean();
-}
+export const findUser = async (query: FilterQuery<UserDocument>) =>
+  User.findOne(query).lean();
 
-export async function validatePassword({
+export const validatePassword = async ({
   username,
   password,
 }: {
   username: UserDocument['username'];
   password: string;
-}) {
+}) => {
   const user = await User.findOne({ username });
 
   if (!user) return false;
@@ -41,16 +40,15 @@ export async function validatePassword({
   if (!isValid) return false;
 
   return omit(user.toJSON(), 'password');
-}
+};
 
-export async function getUsers() {
-  return User.find({}).lean();
-}
+export const getUsers = async () => User.find({}).lean();
 
-export async function findAndUpdate(
+export const findAndUpdate = async (
   query: FilterQuery<UserDocument>,
   update: UpdateQuery<UserDocument>,
   options: QueryOptions,
-) {
-  return User.findOneAndUpdate(query, update, options).lean();
-}
+) => User.findOneAndUpdate(query, update, options).lean();
+
+export const deleteUser = async (query: FilterQuery<UserDocument>) =>
+  User.deleteOne(query);

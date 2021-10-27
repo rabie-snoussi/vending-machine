@@ -6,13 +6,13 @@ import { UserDocument } from '../model/user.model';
 import { sign, decode } from '../utils/jwt.utils';
 import { findUser } from '../service/user.service';
 
-export async function createSession(userId: string, userAgent: string) {
+export const createSession = async (userId: string, userAgent: string) => {
   const session = await Session.create({ user: userId, userAgent });
 
   return session.toJSON();
-}
+};
 
-export function createAccessToken({
+export const createAccessToken = async ({
   user,
   session,
 }: {
@@ -22,20 +22,20 @@ export function createAccessToken({
   session:
     | Omit<SessionDocument, 'password'>
     | LeanDocument<Omit<SessionDocument, 'password'>>;
-}) {
+}) => {
   const accessToken = sign(
     { ...user, session: session._id },
     { expiresIn: config.get('accessTokenTtl') },
   );
 
   return accessToken;
-}
+};
 
-export async function reIssueAccessToken({
+export const reIssueAccessToken = async ({
   refreshToken,
 }: {
   refreshToken: string;
-}) {
+}) => {
   const { decoded } = decode(refreshToken);
 
   if (!decoded || !get(decoded, '_id')) return false;
@@ -51,19 +51,15 @@ export async function reIssueAccessToken({
   const accessToken = createAccessToken({ user, session });
 
   return accessToken;
-}
+};
 
-export async function updateSession(
+export const updateSession = (
   query: FilterQuery<SessionDocument>,
   update: UpdateQuery<SessionDocument>,
-) {
-  return Session.updateOne(query, update);
-}
+) => Session.updateOne(query, update);
 
-export async function getOneSession(query: FilterQuery<SessionDocument>) {
-  return Session.findOne(query).lean();
-}
+export const getOneSession = async (query: FilterQuery<SessionDocument>) =>
+  Session.findOne(query).lean();
 
-export async function deleteSession(query: FilterQuery<SessionDocument>) {
-  return Session.deleteOne(query);
-}
+export const deleteSession = async (query: FilterQuery<SessionDocument>) =>
+  Session.deleteOne(query);
