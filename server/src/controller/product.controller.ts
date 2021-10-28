@@ -112,7 +112,11 @@ export const buyProductHandler = async (req: Request, res: Response) => {
     const amountLeft = amountAvailable - amountRequested;
 
     // Update the available amount
-    await findAndUpdate({ _id: productId }, { amountAvailable: amountLeft });
+    const updatedProduct = await findAndUpdate(
+      { _id: productId },
+      { amountAvailable: amountLeft },
+      { new: true },
+    );
 
     // Reset the deposit
     await findUserAndUpdate({ _id: userId }, { deposit: 0 });
@@ -121,7 +125,7 @@ export const buyProductHandler = async (req: Request, res: Response) => {
     const change = userChange(totalCost, deposit);
 
     return res.send({
-      product,
+      product: updatedProduct,
       totalCost,
       change,
     });

@@ -10,8 +10,10 @@ const changeCount = (cost: number, coin: number) => {
 export const userChange = (totalCost: number, deposit: number) => {
   if (totalCost === deposit) return {};
 
+  const amountToReturn = deposit - totalCost;
+
   const { result: hundreds, left: leftFromHundreds } = changeCount(
-    totalCost,
+    amountToReturn,
     100,
   );
   const { result: fifties, left: leftFromFifties } = changeCount(
