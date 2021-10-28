@@ -19,6 +19,7 @@ import {
   getProductHandler,
   updateProductHandler,
   deleteProductHandler,
+  buyProductHandler,
 } from './controller/product.controller';
 import { validateRequest } from './middleware';
 import {
@@ -35,6 +36,7 @@ import { createSessionSchema } from './schema/session.schema';
 import {
   createProductSchema,
   updateProductSchema,
+  buyProductSchema,
 } from './schema/product.schema';
 
 export default function (app: Express) {
@@ -104,8 +106,10 @@ export default function (app: Express) {
     deleteProductHandler,
   );
 
-  /* Implement /buy endpoint (accepts productId, amount of products) so users
-    with a “buyer” role can buy products with the money they’ve deposited. API
-    should return total they’ve spent, products they’ve purchased and their
-    change if there’s any (in 5, 10, 20, 50 and 100 cent coins) */
+  // Buy a product
+  app.patch(
+    '/api/buy',
+    [validateRequest(buyProductSchema), userAuthenticated(isBuyer)],
+    buyProductHandler,
+  );
 }

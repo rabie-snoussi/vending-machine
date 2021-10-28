@@ -47,7 +47,7 @@ export const getUsers = async () => User.find({}).lean();
 export const findAndUpdate = async (
   query: FilterQuery<UserDocument>,
   update: UpdateQuery<UserDocument>,
-  options: QueryOptions,
+  options?: QueryOptions,
 ) => User.findOneAndUpdate(query, update, options).lean();
 
 export const deleteUser = async (query: FilterQuery<UserDocument>) =>

@@ -35,7 +35,7 @@ export const findProduct = async (query: FilterQuery<ProductDocument>) => {
 export const findAndUpdate = async (
   query: FilterQuery<ProductDocument>,
   update: UpdateQuery<ProductDocument>,
-  options: QueryOptions,
+  options?: QueryOptions,
 ) => {
   try {
     return await Product.findOneAndUpdate(query, update, options).lean();

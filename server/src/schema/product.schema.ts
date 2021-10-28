@@ -15,3 +15,10 @@ export const updateProductSchema = object({
     cost: number().min(5),
   }),
 });
+
+export const buyProductSchema = object({
+  body: object({
+    productId: string().required('Product id is required'),
+    amount: number().required('Amount of the product is required').min(1),
+  }),
+});
