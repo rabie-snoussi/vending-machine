@@ -101,3 +101,20 @@ export const deleteUserHandler = async (req: Request, res: Response) => {
     return res.status(409).send(e.message);
   }
 };
+
+export const resetHandler = async (req: Request, res: Response) => {
+  try {
+    const userId = get(req, 'user._id');
+
+    const updatedUser = await findAndUpdate(
+      { _id: userId },
+      { deposit: 0 },
+      { new: true },
+    );
+
+    return res.send(omit(updatedUser, 'password'));
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+};
