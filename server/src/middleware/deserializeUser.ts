@@ -20,7 +20,7 @@ const deserializeUser = async (
 
   const { decoded, expired } = decode(accessToken);
 
-  const sessionId = get(decoded, 'session');
+  const sessionId = get(decoded, 'sessionId');
   const session = await getOneSession({ _id: sessionId });
 
   const userId = get(decoded, '_id');

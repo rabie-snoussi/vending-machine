@@ -29,7 +29,7 @@ export const createSessionHandler = async (req: Request, res: Response) => {
 };
 
 export const deleteSessionHandler = async (req: Request, res: Response) => {
-  const sessionId = get(req, 'user.session');
+  const sessionId = get(req, 'user.sessionId');
   await deleteSession({ _id: sessionId });
 
   return res.sendStatus(200);

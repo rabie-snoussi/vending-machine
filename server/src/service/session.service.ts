@@ -1,4 +1,4 @@
-import { LeanDocument, FilterQuery, UpdateQuery } from 'mongoose';
+import { LeanDocument, FilterQuery } from 'mongoose';
 import get from 'lodash/get';
 import config from 'config';
 import Session, { SessionDocument } from '../model/session.model';
@@ -7,8 +7,7 @@ import { sign, decode } from '../utils/jwt.utils';
 import { findUser } from '../service/user.service';
 
 export const createSession = async (userId: string, userAgent: string) => {
-  const session = await Session.create({ user: userId, userAgent });
-
+  const session = await Session.create({ userId, userAgent });
   return session.toJSON();
 };
 
@@ -19,12 +18,10 @@ export const createAccessToken = async ({
   user:
     | Omit<UserDocument, 'password'>
     | LeanDocument<Omit<UserDocument, 'password'>>;
-  session:
-    | Omit<SessionDocument, 'password'>
-    | LeanDocument<Omit<SessionDocument, 'password'>>;
+  session: SessionDocument | LeanDocument<SessionDocument>;
 }) => {
   const accessToken = sign(
-    { ...user, session: session._id },
+    { ...user, sessionId: session._id },
     { expiresIn: config.get('accessTokenTtl') },
   );
 
@@ -44,7 +41,7 @@ export const reIssueAccessToken = async ({
 
   if (!session) return false;
 
-  const user = await findUser({ _id: session.user });
+  const user = await findUser({ _id: session.userId });
 
   if (!user) return false;
 
@@ -52,11 +49,6 @@ export const reIssueAccessToken = async ({
 
   return accessToken;
 };
-
-export const updateSession = (
-  query: FilterQuery<SessionDocument>,
-  update: UpdateQuery<SessionDocument>,
-) => Session.updateOne(query, update);
 
 export const getOneSession = async (query: FilterQuery<SessionDocument>) =>
   Session.findOne(query).lean();
