@@ -13,17 +13,32 @@ import {
   createSessionHandler,
   deleteSessionHandler,
 } from './controller/session.controller';
+import {
+  createProductHandler,
+  getProductsHandler,
+  getProductHandler,
+  updateProductHandler,
+  deleteProductHandler,
+} from './controller/product.controller';
 import { validateRequest } from './middleware';
-import { isBuyer, userAuthenticated } from './middleware/userAuthenticated';
+import {
+  isBuyer,
+  isSeller,
+  userAuthenticated,
+} from './middleware/userAuthenticated';
 import {
   createUserSchema,
   depositSchema,
   updateUserSchema,
 } from './schema/user.schema';
 import { createSessionSchema } from './schema/session.schema';
+import {
+  createProductSchema,
+  updateProductSchema,
+} from './schema/product.schema';
 
 export default function (app: Express) {
-  // Register user
+  // Add a user
   app.post('/api/users', validateRequest(createUserSchema), createUserHandler);
 
   // List users
@@ -62,10 +77,32 @@ export default function (app: Express) {
   // Logout
   app.delete('/api/auth', userAuthenticated(), deleteSessionHandler);
 
-  // Implement product model with amountAvailable, cost, productName and sellerId fields
+  // Add a product
+  app.post('/api/products', [
+    userAuthenticated(isSeller),
+    validateRequest(createProductSchema),
+    createProductHandler,
+  ]);
 
-  /* Implement CRUD for a product model (GET can be called by anyone, while POST,
-    PUT and DELETE can be called only by the seller user who created the product) */
+  // List products
+  app.get('/api/products', userAuthenticated(), getProductsHandler);
+
+  // Get a product
+  app.get('/api/products/:productId', userAuthenticated(), getProductHandler);
+
+  // Update a product
+  app.patch('/api/products/:productId', [
+    userAuthenticated(isSeller),
+    validateRequest(updateProductSchema),
+    updateProductHandler,
+  ]);
+
+  // Delete a product
+  app.delete(
+    '/api/products/:productId',
+    userAuthenticated(isSeller),
+    deleteProductHandler,
+  );
 
   /* Implement /buy endpoint (accepts productId, amount of products) so users
     with a “buyer” role can buy products with the money they’ve deposited. API

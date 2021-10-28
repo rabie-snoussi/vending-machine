@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { omit, get } from 'lodash';
+import get from 'lodash/get';
+import omit from 'lodash/omit';
 import {
   createUser,
   getUsers,
