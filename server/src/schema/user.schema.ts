@@ -10,7 +10,7 @@ export const createUserSchema = object({
     passwordConfirmation: string()
       .required('Password confirmation is required')
       .oneOf([ref('password'), null], 'Passwords must match'),
-    role: string().required().oneOf(['buyer', 'seller'], 'Role incorrect'),
+    role: string().required('Role is required').oneOf(['buyer', 'seller'], 'Role incorrect'),
   }),
 });
 

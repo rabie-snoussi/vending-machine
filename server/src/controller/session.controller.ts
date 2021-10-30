@@ -25,7 +25,17 @@ export const createSessionHandler = async (req: Request, res: Response) => {
     expiresIn: config.get('refreshTokenTtl'),
   });
 
-  return res.send({ accessToken, refreshToken });
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  return res.send({ user });
 };
 
 export const deleteSessionHandler = async (req: Request, res: Response) => {

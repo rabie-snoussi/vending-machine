@@ -3,6 +3,7 @@ import { Express } from 'express';
 import {
   createUserHandler,
   getUsersHandler,
+  getUserFromTokenHandler,
   updateDepositHandler,
   getUserHandler,
   updateUserHandler,
@@ -48,6 +49,9 @@ export default function (app: Express) {
 
   // Get a user
   app.get('/api/users/:userId', userAuthenticated(), getUserHandler);
+
+  // Get user from token
+  app.get('/api/user', userAuthenticated(), getUserFromTokenHandler);
 
   // Update a user
   app.patch(

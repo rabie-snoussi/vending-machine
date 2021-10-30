@@ -68,6 +68,18 @@ export const getUserHandler = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserFromTokenHandler = async (req: Request, res: Response) => {
+  try {
+    const userId = get(req, 'user._id');
+    const user = await findUser({ _id: userId });
+
+    return res.send(omit(user, 'password'));
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+};
+
 export const updateUserHandler = async (req: Request, res: Response) => {
   try {
     const loggedUserId = get(req, 'user._id');

@@ -12,6 +12,8 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "config": "^3.3.6",
+    "cookie": "^0.4.1",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
@@ -25,6 +27,8 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/config": "0.0.39",
+    "@types/cookie": "^0.4.1",
+    "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.5",

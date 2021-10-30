@@ -1,0 +1,13 @@
+{
+  "signIn": "Sign In",
+  "noAccountSignUp": "Don't have an account yet ? Sign up !",
+  "username": "Username",
+  "password": "Password",
+  "passwordConfirmation": "Password Confirmation",
+  "buyer": "Buyer",
+  "seller": "Seller",
+  "signUp": "Sign Up",
+  "pendingRequest": "Pending request",
+  "welcome": "Welcome",
+  "creationSuccess": "Creation success"
+}

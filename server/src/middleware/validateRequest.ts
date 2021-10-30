@@ -11,15 +11,12 @@ const validate =
           query: req.query,
           params: req.params,
         },
-        {
-          abortEarly: false,
-        },
       );
 
       return next();
     } catch (e: any) {
       log.error(e);
-      return res.status(400).send({ errors: e.errors });
+      return res.status(400).send(e.message);
     }
   };
 
