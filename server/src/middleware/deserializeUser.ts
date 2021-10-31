@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import { Request, Response, NextFunction } from 'express';
 import { decode } from '../utils/jwt.utils';
-import { reIssueAccessToken, getOneSession } from '../service/session.service';
+import { reIssueAccessToken } from '../service/session.service';
 import { findUser } from '../service/user.service';
 
 const deserializeUser = async (
@@ -24,13 +24,10 @@ const deserializeUser = async (
 
   const { decoded, expired } = decode(accessToken);
 
-  const sessionId = get(decoded, 'sessionId');
-  const session = await getOneSession({ _id: sessionId });
-
-  const userId = get(decoded, '_id');
+  const userId = get(decoded, 'userId');
   const user = await findUser({ _id: userId });
 
-  if (decoded && session && user) {
+  if (decoded && user) {
     Object.defineProperty(req, 'user', {
       value: decoded,
     });

@@ -13,15 +13,13 @@ export const createSession = async (userId: string, userAgent: string) => {
 
 export const createAccessToken = async ({
   user,
-  session,
 }: {
   user:
     | Omit<UserDocument, 'password'>
     | LeanDocument<Omit<UserDocument, 'password'>>;
-  session: SessionDocument | LeanDocument<SessionDocument>;
 }) => {
   const accessToken = sign(
-    { ...user, sessionId: session._id },
+    { userId: user._id },
     { expiresIn: config.get('accessTokenTtl') },
   );
 
@@ -35,9 +33,9 @@ export const reIssueAccessToken = async ({
 }) => {
   const { decoded } = decode(refreshToken);
 
-  if (!decoded || !get(decoded, '_id')) return false;
+  if (!decoded || !get(decoded, 'sessionId')) return false;
 
-  const session = await Session.findById(get(decoded, '_id'));
+  const session = await Session.findById(get(decoded, 'sessionId'));
 
   if (!session) return false;
 
@@ -45,7 +43,7 @@ export const reIssueAccessToken = async ({
 
   if (!user) return false;
 
-  const accessToken = createAccessToken({ user, session });
+  const accessToken = createAccessToken({ user });
 
   return accessToken;
 };

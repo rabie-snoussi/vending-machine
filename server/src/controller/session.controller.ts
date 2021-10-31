@@ -18,12 +18,14 @@ export const createSessionHandler = async (req: Request, res: Response) => {
 
   const accessToken = await createAccessToken({
     user,
-    session,
   });
 
-  const refreshToken = sign(session, {
-    expiresIn: config.get('refreshTokenTtl'),
-  });
+  const refreshToken = sign(
+    { sessionId: session._id },
+    {
+      expiresIn: config.get('refreshTokenTtl'),
+    },
+  );
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
