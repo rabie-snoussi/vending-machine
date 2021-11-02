@@ -63,7 +63,7 @@ const Home: React.FC<HomeProps> = ({
   };
 
   return (
-    <Box sx={{ background: '#000', height: '100%' }}>
+    <Box sx={{ background: '#f5f5f5', height: '100%' }}>
       {modalDisplay[modal]}
 
       <Box sx={{ padding: '1em 0', display: 'flex', justifyContent: 'center' }}>

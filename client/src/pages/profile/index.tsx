@@ -51,7 +51,7 @@ const Profile: React.FC<Props> = ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#000',
+        background: '#f5f5f5',
       }}
     >
       <Card
