@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import get from 'lodash/get';
+import omit from 'lodash/omit';
 import {
   createProduct,
   findProducts,
@@ -59,7 +60,7 @@ export const updateProductHandler = async (req: Request, res: Response) => {
     const product = await findProduct({ _id: productId });
     const sellerId = get(product, 'sellerId');
 
-    if (userId !== String(sellerId)) return res.sendStatus(403);
+    if (String(userId) !== String(sellerId)) return res.sendStatus(403);
 
     const updatedProduct = await findAndUpdate({ _id: productId }, update, {
       new: true,
@@ -78,7 +79,7 @@ export const deleteProductHandler = async (req: Request, res: Response) => {
     const product = await findProduct({ _id: productId });
     const sellerId = get(product, 'sellerId');
 
-    if (userId !== String(sellerId)) return res.sendStatus(403);
+    if (String(userId) !== String(sellerId)) return res.sendStatus(403);
 
     await deleteProduct({ _id: productId });
 
@@ -119,12 +120,19 @@ export const buyProductHandler = async (req: Request, res: Response) => {
     );
 
     // Reset the deposit
-    await findUserAndUpdate({ _id: userId }, { deposit: 0 });
+    const updatedUser = await findUserAndUpdate(
+      { _id: userId },
+      { deposit: 0 },
+      { new: true },
+    );
+
+    const userWithoutPwd = omit(updatedUser, 'password');
 
     // Return the change
     const change = userChange(totalCost, deposit);
 
     return res.send({
+      user: userWithoutPwd,
       product: updatedProduct,
       totalCost,
       change,

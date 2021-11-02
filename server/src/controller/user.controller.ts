@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { LeanDocument } from 'mongoose';
 import get from 'lodash/get';
 import omit from 'lodash/omit';
 import {
@@ -7,13 +8,27 @@ import {
   findUser,
   findAndUpdate,
   deleteUser,
+  updateUser,
 } from '../service/user.service';
+import { UserDocument } from '../model/user.model';
 import log from '../logger';
 
-export const createUserHandler = async (req: Request, res: Response) => {
+export const createUserHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const user = await createUser(req.body);
-    return res.send(omit(user.toJSON(), 'password'));
+    const userOmittedPwd:
+      | Omit<UserDocument, 'password'>
+      | LeanDocument<Omit<UserDocument, 'password'>> = omit(user.toJSON());
+
+    Object.defineProperty(req, 'user', {
+      value: userOmittedPwd,
+    });
+
+    return next();
   } catch (e: any) {
     log.error(e);
     return res.status(409).send(e.message);
@@ -86,9 +101,9 @@ export const updateUserHandler = async (req: Request, res: Response) => {
     const userId = get(req, 'params.userId');
     const update = req.body;
 
-    if (loggedUserId !== userId) return res.sendStatus(403);
+    if (String(loggedUserId) !== String(userId)) return res.sendStatus(403);
 
-    const updatedUser = await findAndUpdate({ _id: userId }, update, {
+    const updatedUser = await updateUser({ _id: userId }, update, {
       new: true,
     });
 
@@ -99,16 +114,20 @@ export const updateUserHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteUserHandler = async (req: Request, res: Response) => {
+export const deleteUserHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const loggedUserId = get(req, 'user._id');
     const userId = get(req, 'params.userId');
 
-    if (loggedUserId !== userId) return res.sendStatus(403);
+    if (String(loggedUserId) !== String(userId)) return res.sendStatus(403);
 
     await deleteUser({ _id: userId });
 
-    return res.sendStatus(200);
+    return next();
   } catch (e: any) {
     log.error(e);
     return res.status(409).send(e.message);

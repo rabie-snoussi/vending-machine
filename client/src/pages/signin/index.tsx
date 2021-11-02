@@ -1,58 +1,34 @@
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { AxiosResponse } from 'axios';
 import { withRouter } from 'react-router';
-import { setUser } from 'actions/user.action';
-import { signInRequest } from 'service/user.service';
+import { signIn } from 'actions/user.action';
 import { PATHS } from 'shared/constants';
-import get from 'lodash/get';
-import { toast } from 'react-toastify';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Link from '@mui/material/Link';
-import { UserInterface, Credentials } from 'shared/interfaces';
+import isEmpty from 'lodash/isEmpty';
+import { User, Credentials } from 'shared/interfaces';
 import locale from 'shared/locale.json';
 
 interface SigninProps extends RouteComponentProps {
-  storeUser: Function;
+  login: Function;
+  user: User;
 }
 
-const Signin: React.FC<SigninProps> = ({ history, storeUser }) => {
+const Signin: React.FC<SigninProps> = ({ history, login, user }) => {
   const { register, handleSubmit } = useForm();
 
   const onSubmit = (credentials: Credentials) => {
-    const response = signInRequest(credentials);
-
-    toast.promise(response, {
-      pending: locale.pendingRequest,
-      success: locale.welcome,
-      error: {
-        render({ data }: AxiosResponse) {
-          const serverMessage = get(data, 'response.data');
-          const errorMessage = get(data, 'message');
-          return serverMessage || errorMessage;
-        },
-      },
-    });
-
-    response.then((data) => {
-      const { _id, username, role, deposit } = get(
-        data,
-        'data.user',
-      ) as UserInterface;
-
-      const user = { _id, username, role, deposit };
-
-      storeUser(user);
-
-      history.push(PATHS.HOME);
-    });
+    login(credentials);
   };
+
+  if (!isEmpty(user)) history.push(PATHS.HOME);
 
   return (
     <Box
@@ -80,9 +56,8 @@ const Signin: React.FC<SigninProps> = ({ history, storeUser }) => {
               padding: '20px 0',
             }}
           >
-            <Avatar
-              sx={{ height: '75px', width: '75px' }}
-              src="assets/default-avatar.png"
+            <AccountCircle
+              sx={{ fill: 'lightgrey', width: '90px', height: '90px' }}
             />
           </Box>
 
@@ -110,7 +85,7 @@ const Signin: React.FC<SigninProps> = ({ history, storeUser }) => {
           </Box>
 
           <Box sx={{ padding: '10px 0' }}>
-            <Link href="/signup">{locale.noAccountSignUp}</Link>
+            <Link href={PATHS.SIGNUP}>{locale.noAccountSignUp}</Link>
           </Box>
 
           <Box sx={{ padding: '40px 0 0 0' }}>
@@ -124,13 +99,13 @@ const Signin: React.FC<SigninProps> = ({ history, storeUser }) => {
   );
 };
 
-const mapStateToProps = (state: { user: UserInterface }) => {
+const mapStateToProps = (state: { user: User }) => {
   const { user } = state;
   return { user };
 };
 
 const mapDispatchToProps = (dispatch: Function) => ({
-  storeUser: (data: UserInterface) => dispatch(setUser(data)),
+  login: (data: Credentials) => dispatch(signIn(data)),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Signin));

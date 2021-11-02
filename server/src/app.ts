@@ -9,9 +9,10 @@ import { deserializeUser } from './middleware';
 
 const port = config.get('port') as number;
 const host = config.get('host') as string;
+const clientUri = config.get('clientUri') as string;
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: clientUri, credentials: true }));
 app.use(cookieParser());
 app.use(deserializeUser);
 

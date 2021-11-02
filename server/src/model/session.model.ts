@@ -13,7 +13,7 @@ const SessionSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     userAgent: { type: String },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
 const Session = mongoose.model<SessionDocument>('Session', SessionSchema);

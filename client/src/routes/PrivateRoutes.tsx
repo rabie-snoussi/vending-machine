@@ -1,40 +1,49 @@
-import { useState, useEffect, ReactElement } from 'react';
-import { useDispatch } from 'react-redux';
-import get from 'lodash/get';
+import { useEffect, ReactChild } from 'react';
+import { connect } from 'react-redux';
+import isEmpty from 'lodash/isEmpty';
 import { PATHS } from 'shared/constants';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { setUser } from 'actions/user.action';
-import { getUserRequest } from 'service/user.service';
+import { getUser } from 'actions/user.action';
+import { Navigation } from 'components';
+import { User } from 'shared/interfaces';
 
 interface PrivateRoutesProps extends RouteComponentProps {
-  children: ReactElement | [ReactElement];
+  children: ReactChild | ReactChild[];
+  fetchUser: Function;
+  user: User | false;
 }
 
-const PrivateRoutes = ({ children, history }: PrivateRoutesProps) => {
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-
-  const getUser = async () => {
-    try {
-      const response = await getUserRequest();
-
-      const { _id, username, role, deposit } = get(response, 'data');
-      const user = { _id, username, role, deposit };
-
-      dispatch(setUser(user));
-      setLoading(false);
-    } catch (e: any) {
-      history.push(PATHS.SIGNIN);
-    }
-  };
-
+const PrivateRoutes = ({
+  children,
+  history,
+  fetchUser,
+  user,
+}: PrivateRoutesProps) => {
   useEffect(() => {
-    getUser();
+    fetchUser();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (user === false) history.push(PATHS.SIGNIN);
 
-  return <>{children}</>;
+  if (isEmpty(user)) return <div>Loading...</div>;
+
+  return (
+    <>
+      <Navigation />
+      {children}
+    </>
+  );
 };
 
-export default withRouter(PrivateRoutes);
+const mapStateToProps = (state: { user: User }) => {
+  const { user } = state;
+  return { user };
+};
+
+const mapDispatchToProps = (dispatch: Function) => ({
+  fetchUser: () => dispatch(getUser()),
+});
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(PrivateRoutes),
+);

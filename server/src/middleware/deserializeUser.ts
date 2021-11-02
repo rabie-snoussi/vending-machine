@@ -9,13 +9,6 @@ const deserializeUser = async (
   res: Response,
   next: NextFunction,
 ) => {
-  // const accessToken = get(req, 'headers.authorization', '').replace(
-  //   /^Bearer\s/,
-  //   '',
-  // );
-
-  // const refreshToken = get(req, 'headers.x-refresh');
-
   const accessToken = get(req, 'cookies.accessToken');
 
   const refreshToken = get(req, 'cookies.refreshToken');
@@ -29,7 +22,7 @@ const deserializeUser = async (
 
   if (decoded && user) {
     Object.defineProperty(req, 'user', {
-      value: decoded,
+      value: user,
     });
 
     return next();
@@ -47,8 +40,11 @@ const deserializeUser = async (
 
       const { decoded } = decode(newAccessToken);
 
+      const userId = get(decoded, 'userId');
+      const user = await findUser({ _id: userId });
+
       Object.defineProperty(req, 'user', {
-        value: decoded,
+        value: user,
       });
     }
 

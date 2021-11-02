@@ -17,7 +17,7 @@ const ProductSchema = new mongoose.Schema(
     amountAvailable: { type: Number, required: true },
     cost: { type: Number, required: true },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
 const Product = mongoose.model<ProductDocument>('Product', ProductSchema);

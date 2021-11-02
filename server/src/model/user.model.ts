@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema(
     role: { type: String, required: true },
     deposit: { type: Number, required: true, default: 0 },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
 const User = mongoose.model<UserDocument>('User', UserSchema);

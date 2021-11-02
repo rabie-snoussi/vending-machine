@@ -21,6 +21,26 @@ export const createUser = async (input: DocumentDefinition<UserDocument>) => {
   }
 };
 
+export const updateUser = async (
+  query: FilterQuery<UserDocument>,
+  update: UpdateQuery<UserDocument>,
+  options: QueryOptions,
+) => {
+  try {
+    const salt = await bcrypt.genSalt(config.get('saltWorkFactor'));
+    // @ts-expect-error
+    const hash = await bcrypt.hashSync(update.password, salt);
+
+    return await User.findOneAndUpdate(
+      query,
+      { ...update, password: hash },
+      options,
+    ).lean();
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
 export const findUser = async (query: FilterQuery<UserDocument>) =>
   User.findOne(query).lean();
 
@@ -47,7 +67,7 @@ export const getUsers = async () => User.find({}).lean();
 export const findAndUpdate = async (
   query: FilterQuery<UserDocument>,
   update: UpdateQuery<UserDocument>,
-  options?: QueryOptions,
+  options: QueryOptions,
 ) => User.findOneAndUpdate(query, update, options).lean();
 
 export const deleteUser = async (query: FilterQuery<UserDocument>) =>

@@ -9,7 +9,7 @@ import {
 } from '../service/session.service';
 import { sign } from '../utils/jwt.utils';
 
-export const createSessionHandler = async (req: Request, res: Response) => {
+export const signInHandler = async (req: Request, res: Response) => {
   const user = await validatePassword(req.body);
 
   if (!user) return res.status(401).send('Invalid username or password');
@@ -40,8 +40,19 @@ export const createSessionHandler = async (req: Request, res: Response) => {
   return res.send({ user });
 };
 
-export const deleteSessionHandler = async (req: Request, res: Response) => {
+export const signOutHandler = async (req: Request, res: Response) => {
   const sessionId = get(req, 'user.sessionId');
+
+  res.cookie('accessToken', '', {
+    httpOnly: true,
+    maxAge: 0,
+  });
+
+  res.cookie('refreshToken', '', {
+    httpOnly: true,
+    maxAge: 0,
+  });
+
   await deleteSession({ _id: sessionId });
 
   return res.sendStatus(200);

@@ -10,10 +10,7 @@ import {
   deleteUserHandler,
   resetHandler,
 } from './controller/user.controller';
-import {
-  createSessionHandler,
-  deleteSessionHandler,
-} from './controller/session.controller';
+import { signInHandler, signOutHandler } from './controller/session.controller';
 import {
   createProductHandler,
   getProductsHandler,
@@ -42,7 +39,12 @@ import {
 
 export default function (app: Express) {
   // Add a user
-  app.post('/api/users', validateRequest(createUserSchema), createUserHandler);
+  app.post(
+    '/api/users',
+    validateRequest(createUserSchema),
+    createUserHandler,
+    signInHandler,
+  );
 
   // List users
   app.get('/api/users', userAuthenticated(), getUsersHandler);
@@ -54,14 +56,19 @@ export default function (app: Express) {
   app.get('/api/user', userAuthenticated(), getUserFromTokenHandler);
 
   // Update a user
-  app.patch(
+  app.put(
     '/api/users/:userId',
     [userAuthenticated(), validateRequest(updateUserSchema)],
     updateUserHandler,
   );
 
   // Delete a user
-  app.delete('/api/users/:userId', userAuthenticated(), deleteUserHandler);
+  app.delete(
+    '/api/users/:userId',
+    userAuthenticated(),
+    deleteUserHandler,
+    signOutHandler,
+  );
 
   // Deposit
   app.patch(
@@ -74,14 +81,10 @@ export default function (app: Express) {
   app.patch('/api/reset', userAuthenticated(isBuyer), resetHandler);
 
   // Authenticate
-  app.post(
-    '/api/auth',
-    validateRequest(createSessionSchema),
-    createSessionHandler,
-  );
+  app.post('/api/auth', validateRequest(createSessionSchema), signInHandler);
 
   // Logout
-  app.delete('/api/auth', userAuthenticated(), deleteSessionHandler);
+  app.delete('/api/auth', userAuthenticated(), signOutHandler);
 
   // Add a product
   app.post('/api/products', [
@@ -97,7 +100,7 @@ export default function (app: Express) {
   app.get('/api/products/:productId', userAuthenticated(), getProductHandler);
 
   // Update a product
-  app.patch('/api/products/:productId', [
+  app.put('/api/products/:productId', [
     userAuthenticated(isSeller),
     validateRequest(updateProductSchema),
     updateProductHandler,

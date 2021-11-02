@@ -1,44 +1,37 @@
-import { useForm } from 'react-hook-form';
-import { AxiosResponse } from 'axios';
-import { RouteComponentProps } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import get from 'lodash/get';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { toast } from 'react-toastify';
-import { UserCreation } from 'shared/interfaces';
-import { signUpRequest } from 'service/user.service';
-import { PATHS } from 'shared/constants';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
+
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { RouteComponentProps } from 'react-router-dom';
+import { connect } from 'react-redux';
+import isEmpty from 'lodash/isEmpty';
+import { withRouter } from 'react-router';
+import { UserCreation, User } from 'shared/interfaces';
+import { signUp } from 'actions/user.action';
+import { PATHS, BUYER, SELLER } from 'shared/constants';
 import locale from 'shared/locale.json';
 
-const Signup = ({ history }: RouteComponentProps) => {
+interface SignUpProps extends RouteComponentProps {
+  createUser: Function;
+  user: User;
+}
+
+const Signup: React.FC<SignUpProps> = ({ createUser, history, user }) => {
   const { register, handleSubmit } = useForm();
 
-  const onSubmit = (informations: UserCreation) => {
-    const response = signUpRequest(informations);
-
-    toast.promise(response, {
-      pending: locale.pendingRequest,
-      success: locale.creationSuccess,
-      error: {
-        render({ data }: AxiosResponse) {
-          const serverMessage = get(data, 'response.data');
-          const errorMessage = get(data, 'message');
-          return serverMessage || errorMessage;
-        },
-      },
-    });
-
-    response.then(() => {
-      history.push(PATHS.SIGNIN);
-    });
+  const onSubmit = (data: UserCreation) => {
+    createUser(data);
   };
+
+  if (!isEmpty(user)) history.push(PATHS.HOME);
 
   return (
     <Box
@@ -97,19 +90,25 @@ const Signup = ({ history }: RouteComponentProps) => {
 
           <Box sx={{ padding: '10px 0' }}>
             <FormControl required fullWidth size="small">
-              <RadioGroup {...register('role')}>
+              <RadioGroup aria-label="role" row>
                 <FormControlLabel
-                  value="buyer"
+                  value={BUYER}
                   control={<Radio />}
                   label={locale.buyer}
+                  {...register('role')}
                 />
                 <FormControlLabel
-                  value="seller"
+                  value={SELLER}
                   control={<Radio />}
                   label={locale.seller}
+                  {...register('role')}
                 />
               </RadioGroup>
             </FormControl>
+          </Box>
+
+          <Box sx={{ padding: '10px 0' }}>
+            <Link href={PATHS.SIGNIN}>{locale.hasAccount}</Link>
           </Box>
 
           <Box sx={{ padding: '10px 0' }}>
@@ -123,4 +122,13 @@ const Signup = ({ history }: RouteComponentProps) => {
   );
 };
 
-export default withRouter(Signup);
+const mapStateToProps = (state: { user: User }) => {
+  const { user } = state;
+  return { user };
+};
+
+const mapDispatchToProps = (dispatch: Function) => ({
+  createUser: (data: UserCreation) => dispatch(signUp(data)),
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Signup));

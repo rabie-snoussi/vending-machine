@@ -7,6 +7,7 @@ const Signin = lazy(() => import('pages/signin'));
 const Signup = lazy(() => import('pages/signup'));
 const Home = lazy(() => import('pages/home'));
 const Error = lazy(() => import('pages/error'));
+const Profile = lazy(() => import('pages/profile'));
 
 const Routes = () => (
   <Suspense fallback={<div>Loading...</div>}>
@@ -17,6 +18,7 @@ const Routes = () => (
       <Route path={PATHS.SIGNUP} exact component={Signup} />
       <PrivateRoutes>
         <Route path={PATHS.HOME} exact component={Home} />
+        <Route path={PATHS.PROFILE} exact component={Profile} />
       </PrivateRoutes>
     </Switch>
   </Suspense>

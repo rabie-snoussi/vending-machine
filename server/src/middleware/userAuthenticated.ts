@@ -12,6 +12,5 @@ export const userAuthenticated =
       if (!user) return res.sendStatus(403);
       const userRole = get(req, 'user.role');
       if (userRoleCheck && !userRoleCheck(userRole)) return res.sendStatus(403);
-
       return next();
     };

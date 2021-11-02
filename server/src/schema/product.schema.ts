@@ -17,9 +17,16 @@ export const createProductSchema = object({
 
 export const updateProductSchema = object({
   body: object({
-    productName: string(),
-    amountAvailable: number().min(0),
-    cost: number().min(5),
+    productName: string().required('Product name is required'),
+    amountAvailable: number().required('Product amount is required').min(0),
+    cost: number()
+      .required('Product cost is required')
+      .min(5)
+      .test(
+        'costValue',
+        'Cost must be multiples of 5',
+        (num) => !(num && num % 5),
+      ),
   }),
 });
 
