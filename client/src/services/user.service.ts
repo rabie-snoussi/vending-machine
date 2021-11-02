@@ -63,7 +63,7 @@ export const updateUserRequest = ({
   userId: string;
   data: UserUpdate;
 }) => {
-  const response = axios.put(`${API}/users/${userId}`, data, {
+  const response = axios.patch(`${API}/users/${userId}`, data, {
     withCredentials: true,
   });
 

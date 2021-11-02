@@ -19,7 +19,7 @@ app.use(deserializeUser);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.listen(port, host, () => {
+export default app.listen(port, host, () => {
   log.info(`Server listening at http://${host}:${port}`);
   dbConnect();
   routes(app);

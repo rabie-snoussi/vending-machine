@@ -61,13 +61,21 @@ const ProductTable: React.FC<Props> = ({
             <TableRow
               key={product._id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              data-testid="row"
             >
-              <TableCell align="center">{product.productName}</TableCell>
-              <TableCell align="center">{product.amountAvailable}</TableCell>
-              <TableCell align="center">{product.cost}</TableCell>
-              <TableCell align="center">
+              <TableCell data-testid="productName" align="center">
+                {product.productName}
+              </TableCell>
+              <TableCell data-testid="amountAvailable" align="center">
+                {product.amountAvailable}
+              </TableCell>
+              <TableCell data-testid="cost" align="center">
+                {product.cost}
+              </TableCell>
+              <TableCell data-testid="action" align="center">
                 {isBuyer && (
                   <Button
+                    data-testid="purchaseBtn"
                     variant="contained"
                     disabled={!product.amountAvailable}
                     sx={{
@@ -87,6 +95,7 @@ const ProductTable: React.FC<Props> = ({
 
                 {isSeller && (
                   <Button
+                    data-testid="editProductBtn"
                     variant="contained"
                     disabled={!isOwner(product.sellerId)}
                     sx={{

@@ -32,7 +32,6 @@ const deserializeUser = async (
     const newAccessToken = await reIssueAccessToken({ refreshToken });
 
     if (newAccessToken) {
-      res.setHeader('x-access-token', newAccessToken);
       res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,

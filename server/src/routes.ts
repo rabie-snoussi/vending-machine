@@ -56,7 +56,7 @@ export default function (app: Express) {
   app.get('/api/user', userAuthenticated(), getUserFromTokenHandler);
 
   // Update a user
-  app.put(
+  app.patch(
     '/api/users/:userId',
     [userAuthenticated(), validateRequest(updateUserSchema)],
     updateUserHandler,

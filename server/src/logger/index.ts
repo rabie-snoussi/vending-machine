@@ -1,6 +1,7 @@
 import logger from 'pino';
 
 const log = logger({
+  enabled: true,
   prettyPrint: true,
   base: {
     pid: false,

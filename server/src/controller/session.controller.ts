@@ -37,7 +37,7 @@ export const signInHandler = async (req: Request, res: Response) => {
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
-  return res.send({ user });
+  return res.send(user);
 };
 
 export const signOutHandler = async (req: Request, res: Response) => {
