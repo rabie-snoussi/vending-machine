@@ -5,9 +5,9 @@ import config from 'config';
 import jwt from 'jsonwebtoken';
 import { deleteUser, createUser, findUser } from './service/user.service';
 import { getOneSession } from './service/session.service';
-import server from '../src/app';
+import server from './app';
 
-const privateKey = config.get('privateKey') as string;
+const privateKey = config.get('privateKey');
 
 const ROLES = { BUYER: 'buyer', SELLER: 'seller' };
 
