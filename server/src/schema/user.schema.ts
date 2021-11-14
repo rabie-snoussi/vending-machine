@@ -10,7 +10,7 @@ export const createUserSchema = object({
         'Password must be between 8 and 24 with at least 1 capital letter.',
         (pwd) => {
           const regex = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{8,24}$/;
-          return !!(pwd && regex.test(pwd))!;
+          return !!(pwd && regex.test(pwd));
         },
       ),
     passwordConfirmation: string()
@@ -32,7 +32,7 @@ export const updateUserSchema = object({
         'Password must be between 8 and 24 with at least 1 capital letter.',
         (pwd) => {
           const regex = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{8,24}$/;
-          return !!(pwd && regex.test(pwd))!;
+          return !!(pwd && regex.test(pwd));
         },
       ),
     passwordConfirmation: string()
